@@ -72,6 +72,7 @@ in the project directory.
 | [`assets/labelled/labelled_guardian_data_llm.jsonl`](assets/labelled/labelled_guardian_data_llm.jsonl) | Local | LLM-generated span labels for the sample of Guardian articles |
 | [`assets/labelled/correct_guardian_llm.jsonl`](assets/labelled/correct_guardian_llm.jsonl) | Local | Human-in-the-loop corrected Guardian labels |
 | [`assets/labelled/train_correct_guardian_llm.jsonl`](assets/labelled/train_correct_guardian_llm.jsonl) | Local | Training data from the corrected Guardian labels |
-| [`assets/labelled/eval_correct_guardian_llm.jsonl`](assets/labelled/train_correct_guardian_llm.jsonl) | Local | Evaluation data from the corrected Guardian labels |
+| [`assets/labelled/eval_correct_guardian_llm.jsonl`](assets/labelled/eval_correct_guardian_llm.jsonl) | Local | Evaluation data from the corrected Guardian labels |
+| [`assets/labelled/predicted_spans.jsonl`](assets/labelled/predicted_spans.jsonl) | Local | Predicted spans from the SpanCat model |
 
 <!-- WEASEL: AUTO-GENERATED DOCS END (do not remove) -->
