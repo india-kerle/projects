@@ -1,0 +1,48 @@
+{
+  "lang":"en",
+  "name":"pipeline",
+  "version":"0.0.0",
+  "spacy_version":">=3.7.4,<3.8.0",
+  "description":"",
+  "author":"",
+  "email":"",
+  "url":"",
+  "license":"",
+  "spacy_git_version":"bff8725f4",
+  "vectors":{
+    "width":0,
+    "vectors":0,
+    "keys":0,
+    "name":null,
+    "mode":"default"
+  },
+  "labels":{
+    "tok2vec":[
+
+    ],
+    "spancat":[
+      "technology",
+      "policy",
+      "initiative",
+      "project"
+    ]
+  },
+  "pipeline":[
+    "tok2vec",
+    "spancat"
+  ],
+  "components":[
+    "tok2vec",
+    "spancat"
+  ],
+  "disabled":[
+
+  ],
+  "performance":{
+    "spans_sc_f":0.0005362066,
+    "spans_sc_p":0.000268315,
+    "spans_sc_r":0.3397435897,
+    "tok2vec_loss":3608.3862304688,
+    "spancat_loss":8530.6171875
+  }
+}

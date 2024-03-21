@@ -1,0 +1,19 @@
+- text: "Sunrise, the new solar panel project, is expected to be completed by 2022."
+  entities:
+    project: ['Sunrise']
+    initiative: []
+    policy: []
+    technology: ["solar panel"]
+- text: "advances in soil science, like leveraging microorganisms for rejuvenation, are being used to improve crop yields."
+  entities:
+    project: []
+    initiative: ['improve crop yields', 'leveraging microorganisms for rejuvenation']
+    policy: []
+    technology: []
+
+- text: "The commission discussed Kigali Amendment on HFCs, a controversial climate policy which was met with mixed reviews."
+  entities:
+    project: []
+    initiative: []
+    policy: ['Kigali Amendment on HFCs']
+    technology: []

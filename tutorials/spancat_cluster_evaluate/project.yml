@@ -1,0 +1,106 @@
+title: "A demo project to explore evaluation of multiple components in an end-to-end pipeline"
+description: "A minimal demo spancat project for spaCy v3"
+
+# Variables can be referenced across the project.yml using ${vars.var_name}
+vars:
+  llm_news_path: "assets/raw/guardian_data_sample.jsonl"
+  news_path: "assets/raw/guardian_data.jsonl"
+  spans_model_path: "training/model-best"
+  spancat_db: "correct_guardian_llm"
+  labelled_dataset: "labelled_guardian_data"
+  eval_split: 0.2
+  random_seed: 42
+
+directories: ["assets", "configs", "corpus", "training", "scripts", "packages", "examples"]
+
+workflows:
+  data:
+    - fetch-news
+  label: #labelling commands
+    - prodigy-llm-label
+    - prodigy-llm-review
+    - prodigy-spans-correct 
+  spancat:
+    - spancat-corpus
+    - spancat-train
+    - spancat-evaluate
+    - spancat-extract
+  # cluster:
+    # - cluster-spans
+    # - cluster-label
+
+  evaluate:
+    - spancat-evaluate
+    #- cluster-evaluate
+
+commands:
+  - name: "fetch-news"
+    help: "Fetch news articles from the environment section from the Guardian API"
+    script:
+      - "python -m scripts.fetch_data"
+    deps:
+      - "scripts/fetch_data.py"
+    outputs:
+      - "assets/raw/guardian_data.jsonl"
+      - "assets/raw/guardian_data_sample.jsonl"
+
+  - name: "prodigy-llm-label"
+    help: "Label spans from news articles using an LLM"
+    script:
+      - "dotenv run -- python -m prodigy spans.llm.fetch configs/spancat_llm.cfg ${vars.llm_news_path} dataset:${vars.labelled_dataset}"
+    deps:
+      - "configs/spancat_llm.cfg"
+      - "assets/raw/guardian_data_sample.jsonl"
+    outputs:
+      - "assets/labelled/labelled_guardian_data_llm.jsonl"
+  
+  - name: "prodigy-llm-review"
+    help: "review LLM generated initial spans from news articles"
+    script:
+      - "prodigy spans.manual ${vars.spancat_db} blank:en ${vars.labelled_dataset} --label project,initiative,policy,technology"
+      - "prodigy db-out ${vars.spancat_db} > assets/labelled/${vars.labelled_dataset}.jsonl"
+    deps:
+      - "assets/labelled/labelled_guardian_data_llm.jsonl"
+    outputs:
+      - "assets/labelled/correct_guardian_llm.jsonl"
+
+  - name: "prodigy-spans-correct"
+    help: "Correct spans from news articles"
+    script:
+      - "prodigy spans.correct full_guardian_labels ${vars.spans_model_path} ${vars.news_path} --update"
+    deps:
+      - "training/spancat-model-best"
+      - "assets/raw/guardian_data.jsonl"
+  
+  - name: "spancat-corpus"
+    help: "Create two spancat dbs for training and evaluation"
+    script:
+      - "python -m scripts.spans_corpus --data-path assets/labelled/${vars.spancat_db}.jsonl --eval-split ${vars.eval_split} --random-seed ${vars.random_seed}"
+      - "prodigy db-in train_${vars.spancat_db} assets/labelled/train_${vars.spancat_db}.jsonl"
+      - "prodigy db-in eval_${vars.spancat_db} assets/labelled/eval_${vars.spancat_db}.jsonl"
+
+  - name: "spancat-train"
+    help: "Train the SpanCat model"
+    script:
+      - "prodigy train training/ --spancat train_${vars.spancat_db},eval:eval_${vars.spancat_db}"
+      - "rm -r training/model-last"
+    outputs:
+      - "training/model-best"
+
+  - name: "spancat-evaluate"
+    help: "Evaluate the spancat model and export various metrics"
+    script:
+      - "prodigy evaluate.evaluate ${vars.spans_model_path} --spancat eval_${vars.spancat_db} --label-stats"
+      - "python -m scripts.evaluate_spancat"
+
+  - name: "spancat-extract"
+    help: "Extract spans using the trained model from the whole Guardian dataset"
+    script:
+      - "python -m scripts.spans_extract --model-path ${vars.spans_model_path} --articles-path ${vars.news_path}"
+    deps:
+      - "training/spancat-model-best"
+      - "assets/raw/guardian_data.jsonl"
+    outputs:
+      - "assets/labelled/predicted_spans.jsonl"
+  
+######### clustering components ############### 
