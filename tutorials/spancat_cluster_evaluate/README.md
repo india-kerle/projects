@@ -9,7 +9,7 @@ The components include:
 1. **Extracting Spans**: A SpanCat model is used to extract spans like `Project`, `Initative`, `Technology` and `Policy` from climate-related newspaper articles from the Guardian. An example of the labelling task is shown below:
 
 <p align="center">
-  <img src="tutorials/spancat_cluster_evaluate/images/label_example.png" alt="SpanCat labelling"/>
+  <img src="images/label_example.png" alt="SpanCat labelling"/>
 </p>
 
 2. **Clustering Spans**: The extracted spans are then clustered to create a list of unique entities.
